@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+    stages {
+        stage('Clean workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Git Clone') {
+            steps {
+                git branch: 'master', credentialsId: '********', url: 'https://github.com/sanyamgupta011/sanyamdjango.git'       
+            }
+        }
+        stage('build image'){
+            steps{
+                sh 'docker build -t sanyamgupta45/django:4.0 .'
+            }
+        }
+        stage('docker login'){
+            steps{
+                sh 'docker login -u username -p ****'
+            }
+        }
+        stage('docker push'){
+            steps{
+                sh 'docker push sanyamgupta45/django:4.0'
+            }
+        }
+        stage('switch user'){
+            steps{
+                sh 'exit'
+            }
+        }
+        stage('deployment'){
+            steps{
+                sh 'kubectl apply -f deployment.yaml'
+            }
+        }
+        stage('service'){
+            steps{
+                sh 'kubectl apply -f service.yaml'
+            }
+        }
+        }
+    }
